@@ -65,6 +65,7 @@ def analyze_video(input_file, training_frame_count):
 
 	cap = cv2.VideoCapture(input_file)
 	# out = cv2.VideoWriter('vid2_result.avi', cv2.cv.CV_FOURCC(*'XVID'), 30.0, (320,240))
+	hasCalled = False
 
 	frame_num=0
 	consecutive_anomaly_count = 0
@@ -87,8 +88,9 @@ def analyze_video(input_file, training_frame_count):
 			alpha = 0.5
 			cv2.rectangle(overlay, (0, 0), (999, 999),(0, 0, 255), -1)
 			cv2.addWeighted(overlay,alpha, frame, 1 - alpha, 0, frame)
-			if consecutive_anomaly_count > 5:
-				nexmo.call_phone("14129831712", "Suspicious activity detected at Wells Fargo Center, Philadelphia")
+			if consecutive_anomaly_count > 5 and not hasCalled:
+				nexmo.call_phone("14129831712", "Suspicious activity detected at University of Pennsylvania, Philadelphia")
+				hasCalled = True
 
 		else: 
 			consecutive_anomaly_count = 0
