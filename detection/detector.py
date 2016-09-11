@@ -2,7 +2,7 @@ import cv2, nexmo
 import scipy.spatial.distance as dist
 import sys
 
-# Params = input_file frame_num_For_training
+# Params = input_file frame_num_For_training phone
 
 clusters = []	# Global array of cluster objects
 
@@ -61,7 +61,7 @@ def assignCluster(feature, isTrainingPhase):
 		return 0
 
 
-def analyze_video(input_file, training_frame_count):
+def analyze_video(input_file, training_frame_count, phone_number):
 
 	cap = cv2.VideoCapture(input_file)
 	# out = cv2.VideoWriter('vid2_result.avi', cv2.cv.CV_FOURCC(*'XVID'), 30.0, (320,240))
@@ -77,7 +77,7 @@ def analyze_video(input_file, training_frame_count):
 			break
 		frame_num += 1
 		# frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)	
-		frame = cv2.GaussianBlur(frame,(5,5),0)	# Smooth image by guassian blur
+		# frame = cv2.GaussianBlur(frame,(5,5),0)	# Smooth image by guassian blur
 		h = hog.compute(frame)
 
 		distance = assignCluster(h, frame_num <= training_frame_count)	# 2nd param is True for training phase
@@ -89,7 +89,7 @@ def analyze_video(input_file, training_frame_count):
 			cv2.rectangle(overlay, (0, 0), (999, 999),(0, 0, 255), -1)
 			cv2.addWeighted(overlay,alpha, frame, 1 - alpha, 0, frame)
 			if consecutive_anomaly_count > 5 and not hasCalled:
-				nexmo.call_phone("14129831712", "Suspicious activity detected at University of Pennsylvania, Philadelphia")
+				nexmo.call_phone(phone_number, "Suspicious activity detected at University of Pennsylvania, Philadelphia", True)
 				hasCalled = True
 
 		else: 
@@ -106,5 +106,5 @@ def analyze_video(input_file, training_frame_count):
 	# out.release()
 
 if __name__ == "__main__":
-	analyze_video(sys.argv[1], int(sys.argv[2]))
+	analyze_video(sys.argv[1], int(sys.argv[2]), sys.argv[3])
 
